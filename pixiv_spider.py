@@ -18,6 +18,7 @@ class PixivImage:
         self.day = day
         self.page = page
         self.timeout = 1000
+        self.fail = 0
 
     # 开始download插图
     def start(self):
@@ -37,11 +38,19 @@ class PixivImage:
             save_threads.append(save_thread)
         for save_thread in save_threads:
             save_thread.join()
-        print('\ntotal image: %d \t cost total time: %.2f \t avage time:%.2f' % (len(total_sections), time.time() - start, (time.time() - start) / len(total_sections)))
+        pbar.close()
+        print('\ntotal image: %d \t cost total time: %.2f \t avage time:%.2f \t fail:%d' % (len(total_sections), time.time() - start, (time.time() - start) / len(total_sections), self.fail))
 
     # download方法
     def save_image_thread(self, section, pbar, thread_lock):
-        self.save_image(section)
+        try:
+            self.save_image(section)
+        except:
+            thread_lock.acquire()
+            print('%d fail!' % (self.get_image_id(section)))
+            self.fail += 1
+            thread_lock.release()
+            print()
         thread_lock.acquire()
         pbar.update(1)
         thread_lock.release()
@@ -128,8 +137,7 @@ class PixivImage:
         return thumbnail_url
 
 def test():
-    #                       年   月   日   页                
-    test_parse = PixivImage(2019, 10, 10, 1)
+    test_parse = PixivImage(2019, 10, 10, 4)
     test_parse.start()
     # print(test_parse.get_html())
     # sections = test_parse.get_sections(test_parse.get_html())
