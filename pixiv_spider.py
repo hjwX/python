@@ -19,12 +19,18 @@ class PixivImage:
         self.page = page
         self.timeout = 1000
         self.fail = 0
+        self.all_path = './original_images/%s%02d%02d' % (self.year, self.month, self.day)
 
     # 开始download插图
     def start(self):
         thread_lock = Lock()
         start = time.time()
         print('start:' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        if not os.path.exists(self.all_path):
+            os.makedirs(self.all_path)
+        else:
+            print(self.all_path + 'is already exist!')
+            return
         total_sections = []
         for i in range(self.page):
             html = self.get_html(i + 1)
@@ -85,10 +91,7 @@ class PixivImage:
             res = request.urlopen(req, timeout=self.timeout)
             res.close()
 
-        all_path = './original_images/%s%02d%02d' % (self.year, self.month, self.day)
-        if not os.path.exists(all_path):
-            os.makedirs(all_path)
-        image_path = all_path + '/%s%s' % (id, os.path.splitext(url)[1])
+        image_path = self.all_path + '/%s%s' % (id, os.path.splitext(url)[1])
         if os.path.exists(image_path):
             return
         res = request.urlopen(req, timeout=self.timeout)
@@ -137,7 +140,7 @@ class PixivImage:
         return thumbnail_url
 
 def test():
-    test_parse = PixivImage(2019, 10, 10, 4)
+    test_parse = PixivImage(2019, 10, 11, 4)
     test_parse.start()
     # print(test_parse.get_html())
     # sections = test_parse.get_sections(test_parse.get_html())
