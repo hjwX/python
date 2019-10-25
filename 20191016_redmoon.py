@@ -9,6 +9,9 @@ def settle_redmoon_battle(path, seasonId):
     # print(redmoon_settles)
     headers = ['战场编号', '势力', '一局城市数', '二局城市数', '三局城市数', '四局城市数', '五局城市数', '六局城市数', '七局城市数', '八局城市数', '九局城市数', ]
     infos = []
+    oneTotalCity = ["total",1,0,0,0,0,0,0,0,0,0]
+    twoTotalCity = ["total",2,0,0,0,0,0,0,0,0,0]
+    threeTotalCity = ["total",3,0,0,0,0,0,0,0,0,0]
     infos.append(headers)
     for settle in np.array(redmoon_settles.iloc[:, [0, 1, 2]]):
         info = []
@@ -20,11 +23,24 @@ def settle_redmoon_battle(path, seasonId):
         afters = re.findall(reg, settle[2])
         afters = [len(i.split(',')) for i in afters]
         info.extend(afters)
+        if info[1] == 1:
+            for i in range(9):
+                oneTotalCity[2+i] += info[2+i]
+        if info[1] == 2:
+            for i in range(9):
+                twoTotalCity[2+i] += info[2+i]
+        if info[1] == 3:
+            for i in range(9):
+                threeTotalCity[2+i] += info[2+i]
         infos.append(info)
+    infos.append(oneTotalCity)
+    infos.append(twoTotalCity)
+    infos.append(threeTotalCity)
     print(infos)
-    with open(seasonId +'_battle_info.csv', 'w') as f:
+    with open(seasonId +'_battle_info.csv', 'w', newline='') as f:
         f_csv = csv.writer(f)
-        f_csv.writerows(infos)
+        for info in infos:
+            f_csv.writerow(info)
 
 def settle_redmoon_userInfo():
     user_infos = pd.read_csv('user_info_0.csv')
@@ -53,6 +69,6 @@ def settle_redmoon_userInfo():
     pass
 
 if __name__ == '__main__':
-    # settle_redmoon_battle('redmoon_settle.csv', '191009')
-    settle_redmoon_userInfo()
+    settle_redmoon_battle('191016_battle.csv', '191016')
+   # settle_redmoon_userInfo()
 
