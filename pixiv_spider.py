@@ -140,7 +140,7 @@ class PixivImage:
         return thumbnail_url
 
 def test():
-    test_parse = PixivImage(2019, 10, 23, 1)
+    test_parse = PixivImage(2019, 11, 6, 4)
     test_parse.start()
     # print(test_parse.get_html())
     # sections = test_parse.get_sections(test_parse.get_html())

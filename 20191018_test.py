@@ -13,3 +13,6 @@ with open('oldRecord.txt', 'r') as f:
     for line in f:
         id = line.split('#')[0]
         print(int(id)%128)
+
+test = [18573533685, 8120027, 8120027, 8120027, 8120027, 8120027, 8120027]
+print(test[1:])
